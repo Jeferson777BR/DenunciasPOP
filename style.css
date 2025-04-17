@@ -1,0 +1,104 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(120deg, #2c3e50, #3498db);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.container {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  padding: 40px;
+  max-width: 600px;
+  width: 100%;
+  animation: fadeIn 1s ease-in-out;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #f1c40f;
+  text-shadow: 2px 2px #000;
+}
+
+.subtitle {
+  font-size: 1rem;
+  margin-top: 10px;
+  color: #ccc;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input, textarea {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  resize: vertical;
+  font-size: 1rem;
+}
+
+textarea {
+  height: 100px;
+}
+
+button {
+  background-color: #27ae60;
+  color: white;
+  padding: 12px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #2ecc71;
+}
+
+.seguranca {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.mensagem-sucesso {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.1rem;
+  color: #2ecc71;
+  transition: opacity 0.5s ease;
+}
+
+.hidden {
+  opacity: 0;
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

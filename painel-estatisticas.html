@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Estatísticas das Denúncias</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #f8f9fa;
+      color: #2c3e50;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      max-width: 960px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    canvas {
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Estatísticas de Denúncias</h1>
+    <canvas id="graficoDenunciasPorDia" height="150"></canvas>
+    <canvas id="graficoTopDenunciados" height="150"></canvas>
+  </div>
+
+  <script>
+    fetch('http://192.168.10.87:5000/api/denuncias')
+      .then(res => res.json())
+      .then(data => {
+        const porDia = {};
+        const porPessoa = {};
+
+        data.forEach(d => {
+          const dataHora = new Date(d[3]);
+          const dia = dataHora.toLocaleDateString();
+
+          porDia[dia] = (porDia[dia] || 0) + 1;
+          porPessoa[d[1]] = (porPessoa[d[1]] || 0) + 1;
+        });
+
+        const dias = Object.keys(porDia);
+        const qtdPorDia = Object.values(porDia);
+
+        const topDenunciados = Object.entries(porPessoa)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+
+        const nomesTop = topDenunciados.map(e => e[0]);
+        const qtdTop = topDenunciados.map(e => e[1]);
+
+        // Gráfico por dia
+        new Chart(document.getElementById('graficoDenunciasPorDia'), {
+          type: 'bar',
+          data: {
+            labels: dias,
+            datasets: [{
+              label: 'Denúncias por dia',
+              data: qtdPorDia,
+              backgroundColor: 'rgba(52, 152, 219, 0.6)',
+              borderColor: 'rgba(41, 128, 185, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+
+        // Gráfico top denunciados
+        new Chart(document.getElementById('graficoTopDenunciados'), {
+          type: 'pie',
+          data: {
+            labels: nomesTop,
+            datasets: [{
+              label: 'Top 5 denunciados',
+              data: qtdTop,
+              backgroundColor: [
+                '#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'
+              ]
+            }]
+          },
+          options: {
+            responsive: true
+          }
+        });
+      })
+      .catch(err => console.error("Erro ao carregar dados:", err));
+  </script>
+</body>
+</html>

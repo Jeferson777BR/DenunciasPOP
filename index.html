@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Denúncia Anônima</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 class="logo">Canal de Denúncias</h1>
+      <p class="subtitle">Todas as informações são mantidas em sigilo absoluto.</p>
+    </header>
+
+    <main>
+      <form id="denunciaForm">
+        <label for="denunciado">Quem você está denunciando?</label>
+        <input type="text" id="denunciado" name="denunciado" required />
+
+        <label for="descricao">O que aconteceu?</label>
+        <textarea id="descricao" name="descricao" required></textarea>
+
+        <p class="seguranca">
+          Todas as informações serão <strong>100% seguras</strong> e tratadas com o <strong>máximo sigilo</strong>.
+          Providências serão tomadas de forma responsável e ética.
+        </p>
+
+        <button type="submit">Enviar denúncia</button>
+      </form>
+
+      <div id="mensagemSucesso" class="mensagem-sucesso hidden">
+        ✅ Denúncia enviada com sucesso!
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

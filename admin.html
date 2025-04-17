@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Denúncias</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #ecf0f1;
+      color: #2c3e50;
+    }
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      margin-top: 40px;
+      max-width: 95%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.95rem;
+    }
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #ccc;
+      vertical-align: top;
+    }
+    th {
+      background: #2980b9;
+      color: white;
+      font-weight: 600;
+    }
+    tr:nth-child(even) {
+      background: #f4f8fb;
+    }
+    tr:hover {
+      background: #d6eaf8;
+      transition: background 0.3s ease;
+    }
+    .descricao-box {
+      max-width: 500px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .action-button {
+      background-color: #2980b9;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.3s ease;
+    }
+    .action-button:hover {
+      background-color: #3498db;
+    }
+    #searchInput {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 220px;
+    }
+    .logo {
+      font-size: 1.8rem;
+      color: #2c3e50;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 0.95rem;
+      color: #555;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    tr {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="admin-header">
+      <div>
+        <h1 class="logo">Painel Administrativo</h1>
+        <p class="subtitle">Acompanhe e gerencie todas as denúncias com clareza e segurança.</p>
+      </div>
+      <div class="actions">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar por nome...">
+        <button class="action-button" onclick="carregarDenuncias()">🔄 Atualizar</button>
+        <button class="action-button" onclick="exportarCSV()">📁 Exportar CSV</button>
+      </div>
+    </div>
+    <main>
+      <table id="tabelaDenuncias">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Denunciado</th>
+            <th>Descrição Detalhada</th>
+            <th>Data e Hora</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </main>
+  </div>
+  <script>
+    let todasDenuncias = [];
+
+    function carregarDenuncias() {
+      fetch('http://192.168.10.87:5000/api/denuncias')
+        .then(res => res.json())
+        .then(data => {
+          todasDenuncias = data;
+          exibirDenuncias(data);
+        })
+        .catch(err => {
+          console.error("Erro ao carregar denúncias:", err);
+        });
+    }
+
+    function exibirDenuncias(denuncias) {
+      const tbody = document.querySelector('#tabelaDenuncias tbody');
+      tbody.innerHTML = '';
+      denuncias.forEach(denuncia => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${denuncia[0]}</td>
+          <td><strong>${denuncia[1]}</strong></td>
+          <td class="descricao-box">${denuncia[2]}</td>
+          <td>${new Date(denuncia[3]).toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function exportarCSV() {
+      let csv = "ID,Denunciado,Descricao,Data\n";
+      todasDenuncias.forEach(d => {
+        const linha = `"${d[0]}","${d[1]}","${d[2].replace(/"/g, '""')}","${new Date(d[3]).toLocaleString()}"`;
+        csv += linha + "\n";
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'denuncias.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const termo = e.target.value.toLowerCase();
+      const filtradas = todasDenuncias.filter(d => d[1].toLowerCase().includes(termo));
+      exibirDenuncias(filtradas);
+    });
+
+    const senha = prompt("🔐 Digite a senha de acesso ao painel:");
+    if (senha !== "admin123") {
+      document.body.innerHTML = "<h2 style='color:#e74c3c; text-align:center; margin-top:20%;'>⛔ Acesso negado</h2>";
+    } else {
+      carregarDenuncias();
+    }
+  </script>
+</body>
+</html>
